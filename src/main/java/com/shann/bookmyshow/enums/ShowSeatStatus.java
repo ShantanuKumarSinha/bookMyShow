@@ -1,5 +1,5 @@
 package com.shann.bookmyshow.enums;
 
-public enum ShowSeatStaus {
+public enum ShowSeatStatus {
     AVAILABLE, BLOCKED, OCCUPIED
 }
