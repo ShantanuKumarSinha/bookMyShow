@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("bookMyShow/api/v1/user")
+@RequestMapping("bookMyShow/api/v1/users")
 public class UserController {
     private UserService userService;
 

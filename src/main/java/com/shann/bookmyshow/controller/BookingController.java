@@ -21,7 +21,7 @@ public class BookingController {
         this.bookingService = bookingService;
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public BookingResponseDTO bookTicket(@RequestBody BookingRequestDTO bookingRequestDTO) throws UserNotFoundException, ShowNotFoundException {
         // Call the booking service to process the booking
         var responseDTO = new BookingResponseDTO();
