@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("bookMyShow/api/v1/bookings")
+@RequestMapping("/bookings")
 public class BookingController {
 
     private BookingService bookingService;
