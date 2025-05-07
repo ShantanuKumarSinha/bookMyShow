@@ -1,8 +1,6 @@
 package com.shann.bookmyshow.controllers;
 
-import com.shann.bookmyshow.dtos.ResponseStatusDTO;
-import com.shann.bookmyshow.dtos.SignUpRequestDTO;
-import com.shann.bookmyshow.dtos.SignUpResponseDTO;
+import com.shann.bookmyshow.dtos.*;
 import com.shann.bookmyshow.services.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,5 +32,21 @@ public class UserController {
             return responseDTO;
         }
 
+    }
+
+    @PostMapping("/login")
+    public LoginResponseDto login(@RequestBody LoginRequestDto requestDto) {
+        var responseDto = new LoginResponseDto();
+        try {
+            // Call the user service to login
+            boolean loggedIn = userService.login(requestDto.getEmail(), requestDto.getPassword());
+            responseDto.setLoggedIn(loggedIn);
+            responseDto.setResponseStatus(ResponseStatus.SUCCESS);
+        } catch (Exception e) {
+            // Handle the exception and create a failure response DTO
+            responseDto.setLoggedIn(false);
+            responseDto.setResponseStatus(ResponseStatus.FAILURE);
+        }
+        return responseDto;
     }
 }
