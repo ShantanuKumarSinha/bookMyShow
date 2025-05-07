@@ -37,4 +37,13 @@ public class UserServiceImpl implements UserService {
         user.setEmail(email);
         return userRepository.save(user);
     }
+
+    @Override
+    public boolean login(String email, String password) throws Exception {
+        var user = userRepository.findByEmail(email).orElseThrow(() -> new Exception("User not found"));
+        if (passwordEncoder.matches(password, user.getPassword())) {
+            return true;
+        }
+        return false;
+    }
 }
