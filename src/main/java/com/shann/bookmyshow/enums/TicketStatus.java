@@ -1,5 +1,5 @@
 package com.shann.bookmyshow.enums;
 
-public enum BookingStatus {
+public enum TicketStatus {
     PENDING, BOOKED, REJECTED
 }

@@ -23,11 +23,11 @@ public class UserController {
             var user = userService.createUser(signUpRequestDTO.name(), signUpRequestDTO.password(), signUpRequestDTO.email(),signUpRequestDTO.userType());
 
             // Create a response DTO
-            var responseDTO = new SignUpResponseDto(user.getUsername(), user.getPassword(), user.getEmail(), ResponseStatusDto.SUCCESS);
+            var responseDTO = new SignUpResponseDto(user.getUsername(), user.getPassword(), user.getEmail(), ResponseStatus.SUCCESS);
             return responseDTO;
         } catch (Exception e) {
             // Handle the exception and create a failure response DTO
-            var responseDTO = new SignUpResponseDto(null, null, null, ResponseStatusDto.FAILURE);
+            var responseDTO = new SignUpResponseDto(null, null, null, ResponseStatus.FAILURE);
             // Return the response DTO
             return responseDTO;
         }
