@@ -4,9 +4,9 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class BookingRequestDTO {
-   private Long userId;
-   private Long showId;
+public class BookingRequestDto {
+   private Integer userId;
+   private Integer showId;
    private List<Integer> showSeatIds;
 
 }

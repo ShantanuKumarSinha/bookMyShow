@@ -1,6 +1,7 @@
 package com.shann.bookmyshow.services.impl;
 
 import com.shann.bookmyshow.entities.User;
+import com.shann.bookmyshow.enums.UserType;
 import com.shann.bookmyshow.repositories.UserRepository;
 import com.shann.bookmyshow.services.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,10 +25,11 @@ public class UserServiceImpl implements UserService {
      * @param username The username of the user.
      * @param password The password of the user.
      * @param email    The email of the user.
+     * @param userType The type of the user (CUSTOMER or ADMIN).
      * @return The created User object.
      */
     @Override
-    public User createUser(String username, String password, String email) {
+    public User createUser(String username, String password, String email, UserType userType) {
         userRepository.findByEmail(email).ifPresent(user -> {
             throw new RuntimeException("User already exists with this email");
         });
@@ -35,6 +37,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
         user.setEmail(email);
+        user.setUserType(userType);
         return userRepository.save(user);
     }
 

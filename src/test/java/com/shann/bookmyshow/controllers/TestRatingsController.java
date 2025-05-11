@@ -1,6 +1,5 @@
-package com.shann.bookmyshow;
+package com.shann.bookmyshow.controllers;
 
-import com.shann.bookmyshow.controllers.RatingsController;
 import com.shann.bookmyshow.dtos.*;
 import com.shann.bookmyshow.entities.Movie;
 import com.shann.bookmyshow.entities.Rating;
@@ -38,7 +37,7 @@ public class TestRatingsController {
     private Movie movie;
 
     @BeforeEach
-    public void insertDummyData(){
+    public void insertDummyData() {
         user1 = new User();
         user1.setUsername("John Doe");
         user1.setEmail("john@doe.com");
@@ -51,19 +50,20 @@ public class TestRatingsController {
 
         movie = new Movie();
         movie.setName("The Dark Knight");
+        movie.setDescription("A junior high student is sentenced to life in prison for theft of his mother's magical key.");
         movie = movieRepository.save(movie);
 
     }
 
     @AfterEach
-    public void cleanUp(){
+    public void cleanUp() {
         ratingRepository.deleteAll();
         movieRepository.deleteAll();
         userRepository.deleteAll();
     }
 
     @Test
-    public void testRateMovie_1stRatingByUser_Success(){
+    public void testRateMovie_1stRatingByUser_Success() {
         RateMovieRequestDto requestDto = new RateMovieRequestDto();
         requestDto.setUserId(user1.getId());
         requestDto.setMovieId(movie.getId());
@@ -82,7 +82,7 @@ public class TestRatingsController {
     }
 
     @Test
-    public void testRateMovie_DoubleRatingByUser_Success(){
+    public void testRateMovie_DoubleRatingByUser_Success() {
         RateMovieRequestDto requestDto = new RateMovieRequestDto();
         requestDto.setUserId(user1.getId());
         requestDto.setMovieId(movie.getId());
@@ -106,7 +106,7 @@ public class TestRatingsController {
     }
 
     @Test
-    public void testRateMovie_UserNotFound_Failure(){
+    public void testRateMovie_UserNotFound_Failure() {
         RateMovieRequestDto requestDto = new RateMovieRequestDto();
         requestDto.setUserId(100);
         requestDto.setMovieId(movie.getId());
@@ -121,7 +121,7 @@ public class TestRatingsController {
     }
 
     @Test
-    public void testRateMovie_MovieNotFound_Failure(){
+    public void testRateMovie_MovieNotFound_Failure() {
         RateMovieRequestDto requestDto = new RateMovieRequestDto();
         requestDto.setUserId(user1.getId());
         requestDto.setMovieId(movie.getId() * 100);
@@ -137,7 +137,7 @@ public class TestRatingsController {
 
 
     @Test
-    public void testGetAverageMovieRating_Success(){
+    public void testGetAverageMovieRating_Success() {
         //User 1 rates movie
         RateMovieRequestDto requestDto = new RateMovieRequestDto();
         requestDto.setUserId(user1.getId());
@@ -156,11 +156,11 @@ public class TestRatingsController {
         GetAverageMovieResponseDto getAverageMovieResponseDto = ratingsController.getAverageMovieRating(getAverageMovieRequestDto);
         assertNotNull(getAverageMovieResponseDto, "Response should be not null");
         assertEquals(ResponseStatus.SUCCESS, getAverageMovieResponseDto.getResponseStatus(), "Response status should be SUCCESS");
-        assertEquals(4.5, getAverageMovieResponseDto.getAverageRating(), 0.01,"Average rating should be 4.5");
+        assertEquals(4.5, getAverageMovieResponseDto.getAverageRating(), 0.01, "Average rating should be 4.5");
     }
 
     @Test
-    public void testGetAverageMovieRating_MovieNotFound_Failure(){
+    public void testGetAverageMovieRating_MovieNotFound_Failure() {
         //User 1 rates movie
         RateMovieRequestDto requestDto = new RateMovieRequestDto();
         requestDto.setUserId(user1.getId());
@@ -175,7 +175,7 @@ public class TestRatingsController {
 
         // Get average rating
         GetAverageMovieRequestDto getAverageMovieRequestDto = new GetAverageMovieRequestDto();
-        getAverageMovieRequestDto.setMovieId(movie.getId()*100);
+        getAverageMovieRequestDto.setMovieId(movie.getId() * 100);
         GetAverageMovieResponseDto getAverageMovieResponseDto = ratingsController.getAverageMovieRating(getAverageMovieRequestDto);
         assertNotNull(getAverageMovieResponseDto, "Response should be not null");
         assertEquals(ResponseStatus.FAILURE, getAverageMovieResponseDto.getResponseStatus(), "Response status should be FAILURE");

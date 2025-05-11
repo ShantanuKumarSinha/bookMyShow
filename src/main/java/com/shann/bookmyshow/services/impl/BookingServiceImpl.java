@@ -71,7 +71,7 @@ public class BookingServiceImpl implements BookingService {
      */
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public Booking bookTicket(Long userId, Long showId, List<Integer> showSeatIds) throws UserNotFoundException, ShowNotFoundException {
+    public Booking bookTicket(Integer userId, Integer showId, List<Integer> showSeatIds) throws UserNotFoundException, ShowNotFoundException {
         // Logic to book a ticket
         var booking = new Booking();
         // Set booking details. Fetch user and show details by their IDs

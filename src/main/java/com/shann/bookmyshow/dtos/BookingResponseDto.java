@@ -4,8 +4,8 @@ import com.shann.bookmyshow.entities.Booking;
 import lombok.Data;
 
 @Data
-public class BookingResponseDTO {
+public class BookingResponseDto {
     private Booking ticket;
-    private ResponseStatusDTO responseDTO;
+    private ResponseStatusDto responseDTO;
 
 }

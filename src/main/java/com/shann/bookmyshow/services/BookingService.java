@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface BookingService {
 
-    public Booking bookTicket(Long userId, Long showId, List<Integer> showSeatIds) throws UserNotFoundException, ShowNotFoundException;
+    public Booking bookTicket(Integer userId, Integer showId, List<Integer> showSeatIds) throws UserNotFoundException, ShowNotFoundException;
 }

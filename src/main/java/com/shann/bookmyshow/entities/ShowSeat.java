@@ -1,10 +1,7 @@
 package com.shann.bookmyshow.entities;
 
 import com.shann.bookmyshow.enums.ShowSeatStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
@@ -16,5 +13,9 @@ public class ShowSeat extends BaseModel {
     private Seat seat;
     @Enumerated(EnumType.ORDINAL)
     private ShowSeatStatus showSeatStaus;
-    private Double price;
+    // price has been moved to SeatTypeShow
+    //private Double price;
+    @OneToOne
+    @JoinColumn(name = "seat_type_show_id", referencedColumnName = "id")
+    private SeatTypeShow seatTypeShow;
 }

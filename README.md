@@ -54,23 +54,45 @@ This application shows how ricking works in bookmyshow with the help of spring b
 
 ### Requirements
 ### Signup Requirements
-    The request to signup will contain the following things:
-    name - The name of the user
-    email - The email of the user
-    password - The password of the user
-    We will not store users plain password in the database. You can use the BCryptPasswordEncoder class to generate the hash of the password.
-    If a user already has signed up, then we should throw an error.
-    If a user is registering themselves for the first time, then we should create a new user in the database and return the user details (only name, email and userId). Password should not be returned.
+    - The request to signup will contain the following things:
+    - name - The name of the user
+    - email - The email of the user
+    - password - The password of the user
+    - We will not store users plain password in the database. You can use the BCryptPasswordEncoder class to generate the hash of the password.
+    - If a user already has signed up, then we should throw an error.
+    - If a user is registering themselves for the first time, then we should create a new user in the database and return the user details (only name, email and userId). Password should not be returned.
 ### Login Requirements
-    The request to login will contain the following things:
-    email - The email of the user
-    password - The password of the user
-    If the user is not registered, and they are trying to login, then we should throw an error.
-    If the user is registered, and they are trying to login, then we should check if the password is correct or not. If the password is correct we should return isLoggedIn as true else false.
+    - The request to login will contain the following things:
+    - email - The email of the user
+    - password - The password of the user
+    - If the user is not registered, and they are trying to login, then we should throw an error.
+    - If the user is registered, and they are trying to login, then we should check if the password is correct or not. If the password is correct we should return isLoggedIn as true else false.
     Instructions
-    Carefully look at SignupUserRequestDto, SignupUserResponseDto, LoginRequestDto and LoginResponseDto classes. These classes represent the request and response of the functionality which we want to implement.
-    Carefully examine the models package to understand the database schema.
-    Implement the signupUser and login method inside the TicketController.
-    Implement the UserService interface and fix the repository interfaces.
-    You might need to add annotations like @Service, @Autowired, @Entity etc. to make the solution work. You might also need to handle cardinality between the models.
-    We will be using H2 database which is an in-memory SQL database. You do not need to implement any database related code. You just need to use the repository interfaces to interact with the database.
+    - Carefully look at SignupUserRequestDto, SignupUserResponseDto, LoginRequestDto and LoginResponseDto classes. These classes represent the request and response of the functionality which we want to implement.
+    - Carefully examine the models package to understand the database schema.
+    - Implement the signupUser and login method inside the TicketController.
+    - Implement the UserService interface and fix the repository interfaces.
+    - We will be using H2 database which is an in-memory SQL database. 
+    - You do not need to implement any database related code. You just need to use the repository interfaces to interact with the database.
+
+
+# Create a show for Book My Show
+## Problem Statement
+    You are building book my show. As a part of this system, you need to expose a functionality using which theatre admins can create a show. Once this show has been created, users will be able to book tickets for this show on the platform.
+
+### Requirements
+    - The request to book a ticket will contain the following things:
+    - Movie ID - The ID of the movie which is being shown.
+    - User ID - The ID of the user who is creating the show.
+    - Screen ID - The ID of the screen where the show is being hosted.
+    - PricingConfig (List) - The price of each seat type for this show.
+    - Start Time - The start time of the show.
+    - End Time - The end time of the show.
+    - Date - The date on which the show is being hosted.
+    - Feature List - The list of features that are supported by this show.
+    - This functionality should be only accessible to the theatre admin.
+    - Every screen has supported features like 2D, 3D, Dolby vision etc. The show that is going to be scheduled on a screen should support all or subset of these features. Example scenarios:
+    - If a screen is a 2D screen, then a 3D show cannot be scheduled on it.
+    - If a screen supports 3D, 2D, Dolby atmos, then a show which supports 2D and Dolby atmos can be scheduled on it.
+    - The functionality should do basic data validation checks ex. The start time should be before the end time.
+    - Once this functionality executes successfully, we should store show details, seats related details for this show and pricing details for this show in the database.
