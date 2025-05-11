@@ -47,7 +47,7 @@ public class RatingServiceImpl implements RatingsService {
      */
     @Override
     public Rating rateMovie(int userId, int movieId, int rating) throws UserNotFoundException, MovieNotFoundException {
-        var user = userRepository.findById((long)userId).orElseThrow(() -> new UserNotFoundException());
+        var user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
         var movie = movieRepository.findById(movieId).orElseThrow(() -> new MovieNotFoundException("Movie not found"));
         var ratingObject = ratingRepository.findByMovieAndUser(movie, user).orElse(new Rating());
         ratingObject.setUser(user);

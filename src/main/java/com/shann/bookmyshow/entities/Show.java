@@ -5,7 +5,7 @@ import com.shann.bookmyshow.enums.Status;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -19,8 +19,9 @@ public class Show extends BaseModel {
     @Enumerated(EnumType.ORDINAL)
     @ElementCollection
     private List<Feature> features;
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private Date startTime;
+    private Date endTime;
     @Enumerated(EnumType.ORDINAL)
     private Status status;
+    private Date showDate;
 }

@@ -3,7 +3,6 @@ package com.shann.bookmyshow.strategies.impl;
 import com.shann.bookmyshow.entities.ShowSeat;
 import com.shann.bookmyshow.strategies.PriceCalculationStrategy;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -21,7 +20,7 @@ public class BasicPriceCalculationStrategy implements PriceCalculationStrategy {
     @Override
     public double calculatePrice(List<ShowSeat> showSeats, double taxRate) {
         AtomicReference<Double> amount = new AtomicReference<>(0.0);
-        showSeats.forEach(showSeat -> amount.updateAndGet(v -> v + showSeat.getPrice()));
+        showSeats.forEach(showSeat -> amount.updateAndGet(v -> v + showSeat.getSeatTypeShow().getPrice()));
         return amount.updateAndGet(v -> v + (v * taxRate));
     }
 

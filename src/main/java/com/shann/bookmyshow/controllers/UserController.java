@@ -17,17 +17,17 @@ public class UserController {
     }
 
     @PostMapping("/signUp")
-    public SignUpResponseDTO signUp(@RequestBody SignUpRequestDTO signUpRequestDTO) {
+    public SignUpResponseDto signUp(@RequestBody SignUpRequestDto signUpRequestDTO) {
         // Call the user service to create a new user
         try {
-            var user = userService.createUser(signUpRequestDTO.name(), signUpRequestDTO.password(), signUpRequestDTO.email());
+            var user = userService.createUser(signUpRequestDTO.name(), signUpRequestDTO.password(), signUpRequestDTO.email(),signUpRequestDTO.userType());
 
             // Create a response DTO
-            var responseDTO = new SignUpResponseDTO(user.getUsername(), user.getPassword(), user.getEmail(), ResponseStatusDTO.SUCCESS);
+            var responseDTO = new SignUpResponseDto(user.getUsername(), user.getPassword(), user.getEmail(), ResponseStatusDto.SUCCESS);
             return responseDTO;
         } catch (Exception e) {
             // Handle the exception and create a failure response DTO
-            var responseDTO = new SignUpResponseDTO(null, null, null, ResponseStatusDTO.FAILURE);
+            var responseDTO = new SignUpResponseDto(null, null, null, ResponseStatusDto.FAILURE);
             // Return the response DTO
             return responseDTO;
         }

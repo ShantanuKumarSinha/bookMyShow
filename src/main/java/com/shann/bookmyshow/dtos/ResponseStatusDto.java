@@ -1,5 +1,5 @@
 package com.shann.bookmyshow.dtos;
 
-public enum ResponseStatusDTO {
+public enum ResponseStatusDto {
     SUCCESS, FAILURE
 }

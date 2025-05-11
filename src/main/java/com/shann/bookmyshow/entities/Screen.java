@@ -1,6 +1,7 @@
 package com.shann.bookmyshow.entities;
 
 import com.shann.bookmyshow.enums.Feature;
+import com.shann.bookmyshow.enums.ScreenStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -13,8 +14,11 @@ public class Screen extends BaseModel {
     @OneToMany(mappedBy = "screen")
     private List<Seat> seats;
     @Enumerated(EnumType.ORDINAL)
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<Feature> features;
+    @Enumerated(EnumType.ORDINAL)
     @OneToMany(mappedBy = "screen")
     private List<Show> shows;
+    @Enumerated(EnumType.ORDINAL)
+    private ScreenStatus screenStatus;
 }
