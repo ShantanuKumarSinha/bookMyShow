@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-
 public interface ShowSeatRepository extends JpaRepository<ShowSeat, Integer> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT ss FROM ShowSeat ss WHERE ss.id IN :showSeatIds")
