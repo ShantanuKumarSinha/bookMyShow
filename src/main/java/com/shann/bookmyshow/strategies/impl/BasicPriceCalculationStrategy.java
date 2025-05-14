@@ -20,7 +20,7 @@ public class BasicPriceCalculationStrategy implements PriceCalculationStrategy {
     @Override
     public double calculatePrice(List<ShowSeat> showSeats, double taxRate) {
         AtomicReference<Double> amount = new AtomicReference<>(0.0);
-        showSeats.forEach(showSeat -> amount.updateAndGet(v -> v + showSeat.getSeatTypeShow().getPrice()));
+        showSeats.forEach(showSeat -> amount.updateAndGet(v -> v + showSeat.getShowSeatType().getPrice()));
         return amount.updateAndGet(v -> v + (v * taxRate));
     }
 

@@ -2,6 +2,7 @@ package com.shann.bookmyshow.services.impl;
 
 import com.shann.bookmyshow.entities.User;
 import com.shann.bookmyshow.enums.UserType;
+import com.shann.bookmyshow.exceptions.UserNotFoundException;
 import com.shann.bookmyshow.repositories.UserRepository;
 import com.shann.bookmyshow.services.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -43,7 +44,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean login(String email, String password) throws Exception {
-        var user = userRepository.findByEmail(email).orElseThrow(() -> new Exception("User not found"));
+        var user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
         if (passwordEncoder.matches(password, user.getPassword())) {
             return true;
         }

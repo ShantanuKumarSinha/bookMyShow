@@ -13,9 +13,9 @@ public class ShowSeat extends BaseModel {
     private Seat seat;
     @Enumerated(EnumType.ORDINAL)
     private ShowSeatStatus showSeatStaus;
-    // price has been moved to SeatTypeShow
+    // price has been moved to ShowSeatType
     //private Double price;
-    @OneToOne
-    @JoinColumn(name = "seat_type_show_id", referencedColumnName = "id")
-    private SeatTypeShow seatTypeShow;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "show_seat_type_id", referencedColumnName = "id")
+    private ShowSeatType showSeatType;
 }

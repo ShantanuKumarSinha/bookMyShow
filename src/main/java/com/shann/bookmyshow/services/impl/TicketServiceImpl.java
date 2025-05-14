@@ -9,10 +9,7 @@ import com.shann.bookmyshow.enums.ShowSeatStatus;
 import com.shann.bookmyshow.exceptions.ShowNotFoundException;
 import com.shann.bookmyshow.exceptions.ShowSeatsNotValidException;
 import com.shann.bookmyshow.exceptions.UserNotFoundException;
-import com.shann.bookmyshow.repositories.TicketRepository;
-import com.shann.bookmyshow.repositories.ShowRepository;
-import com.shann.bookmyshow.repositories.ShowSeatRepository;
-import com.shann.bookmyshow.repositories.UserRepository;
+import com.shann.bookmyshow.repositories.*;
 import com.shann.bookmyshow.services.TicketService;
 import com.shann.bookmyshow.strategies.PriceCalculationStrategy;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -37,6 +35,7 @@ public class TicketServiceImpl implements TicketService {
     private ShowSeatRepository showSeatRepository;
     private TicketRepository ticketRepository;
     private PriceCalculationStrategy priceCalculationStrategy;
+    private PaymentRepository paymentRepository;
     // Using ReentrantLock to lock the show seats
     //private Lock lock = new ReentrantLock();
 
@@ -48,15 +47,17 @@ public class TicketServiceImpl implements TicketService {
      * @param userRepository
      * @param showRepository
      * @param showSeatRepository
-     * @param bookingRepository
+     * @param ticketRepository
+     * @param paymentRepository
      * @param priceCalculationStrategy
      */
 
-    public TicketServiceImpl(UserRepository userRepository, ShowRepository showRepository, ShowSeatRepository showSeatRepository, TicketRepository ticketRepository, PriceCalculationStrategy priceCalculationStrategy) {
+    public TicketServiceImpl(UserRepository userRepository, ShowRepository showRepository, ShowSeatRepository showSeatRepository, TicketRepository ticketRepository, PaymentRepository paymentRepository, PriceCalculationStrategy priceCalculationStrategy) {
         this.userRepository = userRepository;
         this.showRepository = showRepository;
         this.showSeatRepository = showSeatRepository;
         this.ticketRepository = ticketRepository;
+        this.paymentRepository = paymentRepository;
         this.priceCalculationStrategy = priceCalculationStrategy;
     }
 
@@ -71,7 +72,7 @@ public class TicketServiceImpl implements TicketService {
      */
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public Ticket bookTicket(Integer userId, Integer showId, List<Integer> showSeatIds) throws UserNotFoundException, ShowNotFoundException {
+    public Ticket bookTicket(Integer userId, Integer showId, List<Integer> showSeatIds) throws UserNotFoundException, ShowNotFoundException, ShowSeatsNotValidException {
         // Logic to book a ticket
         var ticket = new Ticket();
         // Fetch user and show details by their IDs
@@ -99,7 +100,7 @@ public class TicketServiceImpl implements TicketService {
         // start booking the ticket
         ticket.setUser(user);
         ticket.setTicketStatus(TicketStatus.PENDING);
-        ticket.setBookingNumber("Ticket" + user.getId() + "-" + show.getId());
+        ticket.setBookingNumber("Ticket-" + user.getId() + "-" + show.getId());
 
         // block the seats first
         showSeats.forEach(showSeat -> showSeat.setShowSeatStaus(ShowSeatStatus.BLOCKED));
@@ -116,10 +117,12 @@ public class TicketServiceImpl implements TicketService {
         var payment = new Payment();
         payment.setAmount(ticketPrice);
         payment.setPaymentMode(PaymentMode.UPI);
-        payment.setReferenceNumber(ticket.getBookingNumber() + "-" + ticket.getLastModifiedAt().getTime());
+        payment.setReferenceNumber(ticket.getBookingNumber() + "-" + new Date().getTime()/1000);
         // assume you called the payment gateway
         // paymentGateway.processPayment(payment);
         payment.setPaymentStatus(PaymentStatus.CONFIRMED);
+        // save the payment to the database
+        paymentRepository.save(payment);
 
         // Set the show seats to occupied
         showSeats.forEach(showSeat -> showSeat.setShowSeatStaus(ShowSeatStatus.OCCUPIED));
