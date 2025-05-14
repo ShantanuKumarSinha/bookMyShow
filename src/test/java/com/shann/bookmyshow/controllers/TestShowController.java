@@ -40,7 +40,7 @@ public class TestShowController {
     @Autowired
     private ShowSeatRepository showSeatRepository;
     @Autowired
-    private SeatTypeShowRepository seatTypeShowRepository;
+    private ShowSeatTypeRepository showSeatTypeRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -133,7 +133,7 @@ public class TestShowController {
     @AfterEach
     public void cleanUp() {
         showSeatRepository.deleteAll();
-        seatTypeShowRepository.deleteAll();
+        showSeatTypeRepository.deleteAll();
         showRepository.deleteAll();
         seatsRepository.deleteAll();
         screenRepository.deleteAll();
@@ -160,8 +160,8 @@ public class TestShowController {
         assertEquals(4, showSeats.size(), "Total 4 show seats should be created");
         showSeats.forEach(showSeat -> assertEquals(ShowSeatStatus.AVAILABLE, showSeat.getShowSeatStaus(), "Show seat status should be available"));
 
-        List<SeatTypeShow> seatTypeShows = seatTypeShowRepository.findAll();
-        assertEquals(2, seatTypeShows.size(), "Total 2 seat type show should be created");
+        List<ShowSeatType> showSeatTypes = showSeatTypeRepository.findAll();
+        assertEquals(2, showSeatTypes.size(), "Total 2 seat type show should be created");
 
     }
 

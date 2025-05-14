@@ -6,9 +6,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class SeatTypeShow extends BaseModel {
-    @ManyToOne
-    private Show show;
+public class ShowSeatType extends BaseModel {
     @Enumerated(EnumType.ORDINAL)
     private SeatType seatType;
     private double price;

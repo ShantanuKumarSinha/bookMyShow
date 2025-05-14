@@ -4,6 +4,7 @@ import com.shann.bookmyshow.dtos.BookingRequestDto;
 import com.shann.bookmyshow.dtos.BookingResponseDto;
 import com.shann.bookmyshow.dtos.ResponseStatus;
 import com.shann.bookmyshow.exceptions.ShowNotFoundException;
+import com.shann.bookmyshow.exceptions.ShowSeatsNotValidException;
 import com.shann.bookmyshow.exceptions.UserNotFoundException;
 import com.shann.bookmyshow.services.TicketService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,14 +34,14 @@ public class TicketController {
      * @throws ShowNotFoundException if the show is not found
      */
     @PostMapping("")
-    public BookingResponseDto bookTicket(@RequestBody BookingRequestDto bookingRequestDTO) throws UserNotFoundException, ShowNotFoundException {
+    public BookingResponseDto bookTicket(@RequestBody BookingRequestDto bookingRequestDTO) {
         // Call the booking service to process the booking
         var responseDTO = new BookingResponseDto();
         try {
             var ticket = ticketService.bookTicket(bookingRequestDTO.getUserId(), bookingRequestDTO.getShowId(), bookingRequestDTO.getShowSeatIds());
             responseDTO.setTicket(ticket);
             responseDTO.setResponseStatus(ResponseStatus.SUCCESS);
-        } catch (UserNotFoundException | ShowNotFoundException e) {
+        } catch (UserNotFoundException | ShowNotFoundException | ShowSeatsNotValidException e) {
             responseDTO.setResponseStatus(ResponseStatus.FAILURE);
         }
         // Return the response DTO

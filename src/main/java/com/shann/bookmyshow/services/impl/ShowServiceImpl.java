@@ -1,9 +1,9 @@
 package com.shann.bookmyshow.services.impl;
 
 import com.shann.bookmyshow.entities.Screen;
-import com.shann.bookmyshow.entities.SeatTypeShow;
 import com.shann.bookmyshow.entities.Show;
 import com.shann.bookmyshow.entities.ShowSeat;
+import com.shann.bookmyshow.entities.ShowSeatType;
 import com.shann.bookmyshow.enums.*;
 import com.shann.bookmyshow.exceptions.*;
 import com.shann.bookmyshow.repositories.*;
@@ -32,7 +32,7 @@ public class ShowServiceImpl implements ShowService {
     private ShowRepository showRepository;
     private SeatRepository seatRepository;
     private ShowSeatRepository showSeatRepository;
-    private SeatTypeShowRepository seatTypeShowRepository;
+    private ShowSeatTypeRepository showSeatTypeRepository;
 
     /**
      * Constructor for ShowServiceImpl.
@@ -43,18 +43,17 @@ public class ShowServiceImpl implements ShowService {
      * @param showRepository         the show repository
      * @param seatRepository         the seat repository
      * @param showSeatRepository     the show seat repository
-     * @param seatTypeShowRepository the seat type show repository
+     * @param showSeatTypeRepository the seat type show repository
      */
 
-    public ShowServiceImpl(MovieRepository movieRepository, UserRepository userRepository, ScreenRepository screenRepository, ShowRepository showRepository, SeatRepository seatRepository,
-                           ShowSeatRepository showSeatRepository, SeatTypeShowRepository seatTypeShowRepository) {
+    public ShowServiceImpl(MovieRepository movieRepository, UserRepository userRepository, ScreenRepository screenRepository, ShowRepository showRepository, SeatRepository seatRepository, ShowSeatRepository showSeatRepository, ShowSeatTypeRepository showSeatTypeRepository) {
         this.movieRepository = movieRepository;
         this.userRepository = userRepository;
         this.screenRepository = screenRepository;
         this.showRepository = showRepository;
         this.seatRepository = seatRepository;
         this.showSeatRepository = showSeatRepository;
-        this.seatTypeShowRepository = seatTypeShowRepository;
+        this.showSeatTypeRepository = showSeatTypeRepository;
     }
 
     /**
@@ -109,11 +108,10 @@ public class ShowServiceImpl implements ShowService {
         showSeatRepository.saveAll(showSeats);
         // create the seat type show
         pricingConfig.forEach(pair -> {
-            var seatTypeShow = new SeatTypeShow();
-            seatTypeShow.setSeatType(pair.getFirst());
-            seatTypeShow.setPrice(pair.getSecond());
-            seatTypeShow.setShow(finalShow);
-            seatTypeShow = seatTypeShowRepository.save(seatTypeShow);
+            var showSeatType = new ShowSeatType();
+            showSeatType.setSeatType(pair.getFirst());
+            showSeatType.setPrice(pair.getSecond());
+            showSeatType = showSeatTypeRepository.save(showSeatType);
         });
         return show;
     }
