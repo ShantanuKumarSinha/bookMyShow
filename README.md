@@ -136,3 +136,9 @@ This application shows how ricking works in bookmyshow with the help of spring b
   message.
 - Basic cases like invalid or non-existing userId, invalid showSeatIds etc. should be handled.
 - The system should be scalable and should be able to handle a large number of concurrent requests.
+
+## H2 Console
+  http://127.0.0.1:8080/bookMyShow/api/v1/h2-console
+
+## Swagger UI
+http://127.0.0.1:8080/bookMyShow/api/v1/swagger-ui/index.html#/ticket-controller/bookTicket
