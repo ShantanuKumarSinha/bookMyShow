@@ -14,4 +14,8 @@ public interface ShowSeatRepository extends JpaRepository<ShowSeat, Integer> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT ss FROM ShowSeat ss WHERE ss.id IN :showSeatIds")
     public List<ShowSeat> findAllByIdAndLock(List<Integer> showSeatIds);
+
+    @Lock(value = LockModeType.PESSIMISTIC_READ)
+    List<ShowSeat> findShowSeatsByIdIn(List<Integer> ids);
+
 }

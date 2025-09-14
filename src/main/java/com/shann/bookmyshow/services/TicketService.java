@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface TicketService {
 
-    public Ticket bookTicket(Integer userId, Integer showId, List<Integer> showSeatIds) throws UserNotFoundException, ShowNotFoundException;
+    public Ticket bookTicket(List<Integer> showSeatIds, int userId) throws UserNotFoundException, ShowNotFoundException;
 }
