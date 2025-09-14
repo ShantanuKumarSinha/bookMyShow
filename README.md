@@ -141,4 +141,4 @@ This application shows how ricking works in bookmyshow with the help of spring b
   http://127.0.0.1:8080/bookMyShow/api/v1/h2-console
 
 ## Swagger UI
-http://127.0.0.1:8080/bookMyShow/api/v1/swagger-ui/index.html#/ticket-controller/bookTicket
+http://127.0.0.1:8080/bookMyShow/api/v1/swagger-ui/index.html#

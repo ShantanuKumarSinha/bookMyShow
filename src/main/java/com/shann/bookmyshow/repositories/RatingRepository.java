@@ -18,4 +18,7 @@ public interface RatingRepository extends JpaRepository<Rating, Integer> {
     List<Rating> findByMovie_Id(int movieId);
 
     Optional<Rating> findByMovieAndUser(Movie movie, User user);
+
+    @EntityGraph(attributePaths = "movie,user")
+    Optional<Rating> findByMovie_IdAndUser_Id(Integer movieId, Integer userId);
 }

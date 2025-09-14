@@ -2,6 +2,7 @@ package com.shann.bookmyshow.entities;
 
 import com.shann.bookmyshow.enums.TicketStatus;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;

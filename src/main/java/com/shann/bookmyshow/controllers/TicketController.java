@@ -38,7 +38,7 @@ public class TicketController {
         // Call the booking service to process the booking
         var responseDTO = new BookingResponseDto();
         try {
-            var ticket = ticketService.bookTicket(bookingRequestDTO.getUserId(), bookingRequestDTO.getShowId(), bookingRequestDTO.getShowSeatIds());
+            var ticket = ticketService.bookTicket(bookingRequestDTO.getShowSeatIds(), bookingRequestDTO.getUserId());
             responseDTO.setTicket(ticket);
             responseDTO.setResponseStatus(ResponseStatus.SUCCESS);
         } catch (UserNotFoundException | ShowNotFoundException | ShowSeatsNotValidException e) {

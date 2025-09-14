@@ -1,7 +1,6 @@
 package com.shann.bookmyshow.services.impl;
 
-import com.shann.bookmyshow.entities.Ticket;
-import com.shann.bookmyshow.entities.Payment;
+import com.shann.bookmyshow.entities.*;
 import com.shann.bookmyshow.enums.TicketStatus;
 import com.shann.bookmyshow.enums.PaymentMode;
 import com.shann.bookmyshow.enums.PaymentStatus;
@@ -12,124 +11,95 @@ import com.shann.bookmyshow.exceptions.UserNotFoundException;
 import com.shann.bookmyshow.repositories.*;
 import com.shann.bookmyshow.services.TicketService;
 import com.shann.bookmyshow.strategies.PriceCalculationStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * TicketServiceImpl is the implementation of the TicketService interface.
+ * It provides methods to book tickets for users by blocking show seats.
+ * It also calculates the ticket price using a specified price calculation strategy.
+ */
 @Service
-@Transactional(isolation = Isolation.SERIALIZABLE)
-public class TicketServiceImpl implements TicketService {
-    /**
-     * Repositories for user, show, show seat and ticket.
-     * These are used to fetch the user, show and show seat details from the database.
-     * Repositories are injected using constructor injection.
-     * PriceCalculationStrategy is used to calculate the price of the ticket.
-     */
+public class TicketServiceImpl implements TicketService{
+    
+    private ShowSeatRepository showSeatRepository;
+
+    private TicketRepository ticketRepository;
 
     private UserRepository userRepository;
-    private ShowRepository showRepository;
-    private ShowSeatRepository showSeatRepository;
-    private TicketRepository ticketRepository;
+
     private PriceCalculationStrategy priceCalculationStrategy;
-    private PaymentRepository paymentRepository;
-    // Using ReentrantLock to lock the show seats
-    //private Lock lock = new ReentrantLock();
 
     @Value("${tax.rate}")
     private double taxRate;
 
     /**
-     * Constructor for BookingServiceImpl.
-     * @param userRepository
-     * @param showRepository
-     * @param showSeatRepository
-     * @param ticketRepository
-     * @param paymentRepository
-     * @param priceCalculationStrategy
+     * Constructor for TicketServiceImpl.
+     *
+     * @param showSeatRepository Repository for ShowSeat entities.
+     * @param ticketRepository Repository for Ticket entities.
+     * @param userRepository Repository for User entities.
+     * @param priceCalculationStrategy Strategy for calculating ticket prices.
      */
-
-    public TicketServiceImpl(UserRepository userRepository, ShowRepository showRepository, ShowSeatRepository showSeatRepository, TicketRepository ticketRepository, PaymentRepository paymentRepository, PriceCalculationStrategy priceCalculationStrategy) {
-        this.userRepository = userRepository;
-        this.showRepository = showRepository;
+    @Autowired
+    public TicketServiceImpl(ShowSeatRepository showSeatRepository, TicketRepository ticketRepository, UserRepository userRepository, PriceCalculationStrategy priceCalculationStrategy) {
         this.showSeatRepository = showSeatRepository;
         this.ticketRepository = ticketRepository;
-        this.paymentRepository = paymentRepository;
+        this.userRepository = userRepository;
         this.priceCalculationStrategy = priceCalculationStrategy;
     }
 
     /**
-     * This method books a ticket for a user.
-     * @param userId
-     * @param showId
-     * @param showSeatIds
-     * @return
-     * @throws UserNotFoundException
-     * @throws ShowNotFoundException
+     * This method books a ticket for a user by blocking the selected show seats.
+     * It checks if the user and show seats are valid, and if the seats are available.
+     * If the seats are available, it blocks them and creates a ticket with a pending status.
+     *
+     * @param showSeatIds List of show seat IDs to be booked
+     * @param userId ID of the user booking the ticket
+     * @return Ticket object with the booked seats and user information
+     * @throws UserNotFoundException if the user does not exist
+     * @throws ShowNotFoundException if the show seats are invalid or not available
      */
-    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public Ticket bookTicket(Integer userId, Integer showId, List<Integer> showSeatIds) throws UserNotFoundException, ShowNotFoundException, ShowSeatsNotValidException {
-        // Logic to book a ticket
-        var ticket = new Ticket();
-        // Fetch user and show details by their IDs
-        var user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        var show = showRepository.findById(showId).orElseThrow(ShowNotFoundException::new);
-        // Fetch show seats by their IDs
-        // Using ReentrantLock would have worked only in a single server instance and not in distributed environment
-        /*
-         lock.lock();
-        var showSeats = showSeatRepository.findAllById(showSeatIds);
-         */
-        // If we lock the show seats in showSeatRepository, it is safe for distributed environment
-        var showSeats = showSeatRepository.findAllByIdAndLock(showSeatIds);
-        // All the show seats should be valid otherwise throw ShowSeatNotValidException
-        if (showSeats.size() != showSeatIds.size()) {
-            throw new ShowSeatsNotValidException();
+    public Ticket bookTicket(List<Integer> showSeatIds, int userId) throws UserNotFoundException, ShowNotFoundException {
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Invalid user"));
+
+        List<ShowSeat> showSeats = showSeatRepository.findShowSeatsByIdIn(showSeatIds);
+        if(showSeats.size() != showSeatIds.size()){
+            throw new ShowNotFoundException("Invalid show seats");
         }
 
-        // Seat Availability check
-        showSeats.forEach(showSeat -> {
-            if (!showSeat.getShowSeatStaus().equals(ShowSeatStatus.AVAILABLE)) {
-                throw new ShowSeatsNotValidException();
-            }
-        });
-        // start booking the ticket
-        ticket.setUser(user);
-        ticket.setTicketStatus(TicketStatus.PENDING);
-        ticket.setBookingNumber("Ticket-" + user.getId() + "-" + show.getId());
+        Show show = showSeats.stream().map(ShowSeat::getShow).findFirst().orElseThrow(() -> new ShowSeatsNotValidException("Invalid show"));
 
-        // block the seats first
+        List<ShowSeat> bookedSeats = new ArrayList<>();
+        for (ShowSeat showSeat : showSeats) {
+            if(!showSeat.getShowSeatStaus().equals(ShowSeatStatus.AVAILABLE)){
+                bookedSeats.add(showSeat);
+            }
+        }
+
+        if(!bookedSeats.isEmpty()){
+            throw new ShowSeatsNotValidException("Seats " + bookedSeats + " are not available");
+        }
+
         showSeats.forEach(showSeat -> showSeat.setShowSeatStaus(ShowSeatStatus.BLOCKED));
         showSeatRepository.saveAll(showSeats);
-        // Add the show seats to the ticket
+
+        Ticket ticket = new Ticket();
+        ticket.setBookingNumber(show.getId()+"-"+user.getId()+"-"+new Date().getTime());
+        ticket.setUser(user);
         ticket.setSeats(showSeats);
-        // After blocking the seats, we can proceed with the payment
-        // Calculate the price of the ticket
-        var ticketPrice = priceCalculationStrategy.calculatePrice(showSeats, taxRate);
-        ticket.setAmount(ticketPrice);
-
-        // Set the ticket price in the payment object
-        // payment is not important here
-        var payment = new Payment();
-        payment.setAmount(ticketPrice);
-        payment.setPaymentMode(PaymentMode.UPI);
-        payment.setReferenceNumber(ticket.getBookingNumber() + "-" + new Date().getTime()/1000);
-        // assume you called the payment gateway
-        // paymentGateway.processPayment(payment);
-        payment.setPaymentStatus(PaymentStatus.CONFIRMED);
-        // save the payment to the database
-        paymentRepository.save(payment);
-
-        // Set the show seats to occupied
-        showSeats.forEach(showSeat -> showSeat.setShowSeatStaus(ShowSeatStatus.OCCUPIED));
-        ticket.setPayments(List.of(payment));
-        ticket.setTicketStatus(TicketStatus.BOOKED);
-        // Save the ticket to the database
-        // If payment fails or after timeout of 10 min release the seats
+        ticket.setTicketStatus(TicketStatus.PENDING);
+        var amount = priceCalculationStrategy.calculatePrice(showSeats, taxRate);
+        ticket.setAmount(amount);
         return ticketRepository.save(ticket);
     }
 }
